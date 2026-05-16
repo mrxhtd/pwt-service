@@ -25,7 +25,7 @@ export function Header({ tab, onTab, clientCount, onOpenSettings }: HeaderProps)
     <div style={{ background: '#0f172a', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56, position: 'sticky', top: 0, zIndex: 100 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ fontSize: 22 }}>💧</span>
-        <span style={{ color: '#fff', fontWeight: 700, fontSize: 16, letterSpacing: -0.5 }}>AquaTrack CRM</span>
+        <span style={{ color: '#fff', fontWeight: 700, fontSize: 16, letterSpacing: -0.5 }}>PWT Service</span>
       </div>
       <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
         {nav.map((n) => (

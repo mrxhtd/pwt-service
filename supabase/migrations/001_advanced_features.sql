@@ -1,5 +1,5 @@
 -- ─────────────────────────────────────────────────────────────────────────────
--- AquaTrack CRM — Advanced Features Migration
+-- PWT Service — Advanced Features Migration
 -- Run in Supabase SQL Editor after the initial schema.sql
 -- ─────────────────────────────────────────────────────────────────────────────
 

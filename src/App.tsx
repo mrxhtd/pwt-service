@@ -157,7 +157,7 @@ export default function App() {
       <div style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", minHeight: '100vh', background: '#f0f4f8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center', color: '#64748b' }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>💧</div>
-          <div style={{ fontSize: 14, fontWeight: 600 }}>Loading AquaTrack...</div>
+          <div style={{ fontSize: 14, fontWeight: 600 }}>Loading PWT Service...</div>
         </div>
       </div>
     );
