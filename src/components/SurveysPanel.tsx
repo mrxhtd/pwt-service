@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { ACCENT, PARAMS } from '../constants';
+import { ACCENT, PARAM_GROUP_LABELS, PARAMS } from '../constants';
 import { getStatus } from '../lib/status';
-import type { Survey } from '../types';
+import type { ParamGroup, Survey } from '../types';
+
+const GROUPS: ParamGroup[] = ['system', 'makeup', 'feedwater'];
 
 interface SurveysPanelProps {
   clientId: string;
@@ -97,37 +99,49 @@ function DesktopTable({ list }: { list: Survey[] }) {
           </tr>
         </thead>
         <tbody>
-          {PARAMS.map((p, rowIdx) => (
-            <tr key={p.key} style={{ background: rowIdx % 2 === 0 ? '#fff' : '#fafbfc' }}>
-              <td style={{ padding: '8px 14px', borderBottom: '1px solid #f1f5f9', position: 'sticky', left: 0, background: rowIdx % 2 === 0 ? '#fff' : '#fafbfc', zIndex: 1 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#334155' }}>{p.label}</div>
-                <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 1 }}>
-                  {p.unit ? `${p.unit} · ` : ''}{p.min}–{p.max}
-                </div>
-              </td>
-              {list.map((s, idx) => {
-                const val = s[p.key];
-                const prev = list[idx + 1];
-                const prevVal = prev?.[p.key];
-                const st = getStatus(val, p.min, p.max);
-                const cellBg = st === 'out' ? '#fff5f5' : st === 'ok' ? '#f6fef9' : 'transparent';
-                const valColor = st === 'out' ? '#dc2626' : st === 'ok' ? '#16a34a' : '#64748b';
-                const trend = getTrend(val, prevVal);
-                return (
-                  <td key={s.id} style={{ padding: '8px 12px', textAlign: 'center', borderBottom: '1px solid #f1f5f9', borderLeft: '1px solid #f1f5f9', background: cellBg }}>
-                    {val === '' || val == null ? (
-                      <span style={{ color: '#cbd5e1', fontSize: 12 }}>—</span>
-                    ) : (
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: valColor }}>{val}</span>
-                        {trend && <span style={{ fontSize: 11, fontWeight: 800, color: trend.color }}>{trend.arrow}</span>}
-                      </div>
-                    )}
+          {GROUPS.map((group) => {
+            const groupParams = PARAMS.filter((p) => p.group === group);
+            return [
+              // Section header row
+              <tr key={`header-${group}`}>
+                <td colSpan={list.length + 1} style={{ padding: '8px 14px 4px', background: '#f1f5f9', borderTop: '2px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: 0.5, position: 'sticky', left: 0 }}>
+                  {PARAM_GROUP_LABELS[group]}
+                </td>
+              </tr>,
+              // Param rows
+              ...groupParams.map((p, rowIdx) => (
+                <tr key={p.key} style={{ background: rowIdx % 2 === 0 ? '#fff' : '#fafbfc' }}>
+                  <td style={{ padding: '8px 14px', borderBottom: '1px solid #f1f5f9', position: 'sticky', left: 0, background: rowIdx % 2 === 0 ? '#fff' : '#fafbfc', zIndex: 1 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#334155' }}>{p.label}</div>
+                    <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 1 }}>
+                      {p.unit ? `${p.unit} · ` : ''}{p.min}–{p.max}
+                    </div>
                   </td>
-                );
-              })}
-            </tr>
-          ))}
+                  {list.map((s, idx) => {
+                    const val = s[p.key];
+                    const prev = list[idx + 1];
+                    const prevVal = prev?.[p.key];
+                    const st = getStatus(val, p.min, p.max);
+                    const cellBg = st === 'out' ? '#fff5f5' : st === 'ok' ? '#f6fef9' : 'transparent';
+                    const valColor = st === 'out' ? '#dc2626' : st === 'ok' ? '#16a34a' : '#64748b';
+                    const trend = getTrend(val, prevVal);
+                    return (
+                      <td key={s.id} style={{ padding: '8px 12px', textAlign: 'center', borderBottom: '1px solid #f1f5f9', borderLeft: '1px solid #f1f5f9', background: cellBg }}>
+                        {val === '' || val == null ? (
+                          <span style={{ color: '#cbd5e1', fontSize: 12 }}>—</span>
+                        ) : (
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: valColor }}>{val}</span>
+                            {trend && <span style={{ fontSize: 11, fontWeight: 800, color: trend.color }}>{trend.arrow}</span>}
+                          </div>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              )),
+            ];
+          })}
           <tr style={{ background: '#f8fafc' }}>
             <td style={{ padding: '8px 14px', position: 'sticky', left: 0, background: '#f8fafc', zIndex: 1 }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8' }}>Notes</div>
@@ -173,35 +187,45 @@ function MobileCards({ list }: { list: Survey[] }) {
               </div>
             </div>
 
-            {/* 2-column parameter grid — all 16 params always shown */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: '#e2e8f0' }}>
-              {PARAMS.map((p) => {
-                const val = s[p.key];
-                const prevVal = prev?.[p.key];
-                const isEmpty = val === '' || val == null;
-                const st = getStatus(val, p.min, p.max);
-                const cellBg = isEmpty ? '#fafbfc' : st === 'out' ? '#fff5f5' : st === 'ok' ? '#f6fef9' : '#fff';
-                const valColor = st === 'out' ? '#dc2626' : st === 'ok' ? '#16a34a' : '#475569';
-                const trend = getTrend(val, prevVal);
-                return (
-                  <div key={p.key} style={{ background: cellBg, padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontSize: 10, color: isEmpty ? '#cbd5e1' : '#94a3b8', fontWeight: 600, textTransform: 'uppercase' }}>{p.label}</div>
-                      <div style={{ fontSize: 10, color: '#e2e8f0' }}>{p.min}–{p.max}{p.unit ? ` ${p.unit}` : ''}</div>
-                    </div>
-                    {isEmpty ? (
-                      <span style={{ fontSize: 12, color: '#cbd5e1', fontStyle: 'italic' }}>—</span>
-                    ) : (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 3, textAlign: 'right' }}>
-                        <span style={{ fontSize: 14, fontWeight: 800, color: valColor }}>{val}</span>
-                        {p.unit && <span style={{ fontSize: 10, color: '#94a3b8' }}>{p.unit}</span>}
-                        {trend && <span style={{ fontSize: 12, fontWeight: 800, color: trend.color }}>{trend.arrow}</span>}
-                      </div>
-                    )}
+            {/* Grouped parameter sections */}
+            {GROUPS.map((group) => {
+              const groupParams = PARAMS.filter((p) => p.group === group);
+              return (
+                <div key={group}>
+                  <div style={{ padding: '6px 12px', background: '#f1f5f9', fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: 0.5, borderTop: '1px solid #e2e8f0' }}>
+                    {PARAM_GROUP_LABELS[group]}
                   </div>
-                );
-              })}
-            </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: '#e2e8f0' }}>
+                    {groupParams.map((p) => {
+                      const val = s[p.key];
+                      const prevVal = prev?.[p.key];
+                      const isEmpty = val === '' || val == null;
+                      const st = getStatus(val, p.min, p.max);
+                      const cellBg = isEmpty ? '#fafbfc' : st === 'out' ? '#fff5f5' : st === 'ok' ? '#f6fef9' : '#fff';
+                      const valColor = st === 'out' ? '#dc2626' : st === 'ok' ? '#16a34a' : '#475569';
+                      const trend = getTrend(val, prevVal);
+                      return (
+                        <div key={p.key} style={{ background: cellBg, padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <div style={{ fontSize: 10, color: isEmpty ? '#cbd5e1' : '#94a3b8', fontWeight: 600, textTransform: 'uppercase' }}>{p.label}</div>
+                            <div style={{ fontSize: 10, color: '#e2e8f0' }}>{p.min}–{p.max}{p.unit ? ` ${p.unit}` : ''}</div>
+                          </div>
+                          {isEmpty ? (
+                            <span style={{ fontSize: 12, color: '#cbd5e1', fontStyle: 'italic' }}>—</span>
+                          ) : (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 3, textAlign: 'right' }}>
+                              <span style={{ fontSize: 14, fontWeight: 800, color: valColor }}>{val}</span>
+                              {p.unit && <span style={{ fontSize: 10, color: '#94a3b8' }}>{p.unit}</span>}
+                              {trend && <span style={{ fontSize: 12, fontWeight: 800, color: trend.color }}>{trend.arrow}</span>}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
 
             {s.notes && (
               <div style={{ padding: '8px 14px', fontSize: 12, color: '#64748b', fontStyle: 'italic', borderTop: '1px solid #f1f5f9' }}>
@@ -215,7 +239,7 @@ function MobileCards({ list }: { list: Survey[] }) {
   );
 }
 
-function getTrend(val: number | '', prevVal: number | '' | undefined): { arrow: string; color: string } | null {
+function getTrend(val: number | '' | undefined, prevVal: number | '' | undefined): { arrow: string; color: string } | null {
   if (val === '' || val == null || prevVal === '' || prevVal == null) return null;
   const diff = (val as number) - (prevVal as number);
   if (Math.abs(diff) < 0.001) return { arrow: '=', color: '#cbd5e1' };

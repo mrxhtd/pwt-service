@@ -3,23 +3,48 @@ import type { Client, Param, Product, Status, StockMap, Survey, SystemType } fro
 export const ACCENT = '#0ea5e9';
 
 export const PARAMS: Param[] = [
-  { key: 'ph',          label: 'pH',              unit: '',      min: 6.5, max: 8.5  },
-  { key: 'tds',         label: 'TDS',             unit: 'ppm',   min: 0,   max: 500  },
-  { key: 'conductivity',label: 'Conductivity',    unit: 'µS/cm', min: 0,   max: 1200 },
-  { key: 'totalHard',   label: 'Total Hardness',  unit: 'ppm',   min: 0,   max: 300  },
-  { key: 'calciumHard', label: 'Calcium Hardness',unit: 'ppm',   min: 0,   max: 200  },
-  { key: 'pAlka',       label: 'P-Alkalinity',    unit: 'ppm',   min: 0,   max: 100  },
-  { key: 'mAlka',       label: 'M-Alkalinity',    unit: 'ppm',   min: 80,  max: 300  },
-  { key: 'ohAlka',      label: 'OH-Alkalinity',   unit: 'ppm',   min: 0,   max: 50   },
-  { key: 'chloride',    label: 'Chloride',        unit: 'ppm',   min: 0,   max: 100  },
-  { key: 'iron',        label: 'Iron',            unit: 'ppm',   min: 0,   max: 0.5  },
-  { key: 'phosphate',   label: 'Phosphate',       unit: 'ppm',   min: 2,   max: 8    },
-  { key: 'sulfite',     label: 'Sulfite',         unit: 'ppm',   min: 0,   max: 20   },
-  { key: 'tannin',      label: 'Tannin',          unit: 'ppm',   min: 0,   max: 5    },
-  { key: 'chz',         label: 'CHZ',             unit: 'ppm',   min: 8,   max: 20   },
-  { key: 'deha',        label: 'DEHA',            unit: 'ppm',   min: 3,   max: 10   },
-  { key: 'silica',      label: 'Silica',          unit: 'ppm',   min: 0,   max: 30   },
+  // ── System / Circulating water ─────────────────────────────────────────────
+  { key: 'ph',          label: 'pH',              unit: '',      min: 6.5, max: 8.5,  group: 'system' },
+  { key: 'tds',         label: 'TDS',             unit: 'ppm',   min: 0,   max: 500,  group: 'system' },
+  { key: 'conductivity',label: 'Conductivity',    unit: 'µS/cm', min: 0,   max: 1200, group: 'system' },
+  { key: 'totalHard',   label: 'Total Hardness',  unit: 'ppm',   min: 0,   max: 300,  group: 'system' },
+  { key: 'calciumHard', label: 'Calcium Hardness',unit: 'ppm',   min: 0,   max: 200,  group: 'system' },
+  { key: 'pAlka',       label: 'P-Alkalinity',    unit: 'ppm',   min: 0,   max: 100,  group: 'system' },
+  { key: 'mAlka',       label: 'M-Alkalinity',    unit: 'ppm',   min: 80,  max: 300,  group: 'system' },
+  { key: 'ohAlka',      label: 'OH-Alkalinity',   unit: 'ppm',   min: 0,   max: 50,   group: 'system' },
+  { key: 'chloride',    label: 'Chloride',        unit: 'ppm',   min: 0,   max: 100,  group: 'system' },
+  { key: 'iron',        label: 'Iron',            unit: 'ppm',   min: 0,   max: 0.5,  group: 'system' },
+  { key: 'phosphate',   label: 'Phosphate',       unit: 'ppm',   min: 2,   max: 8,    group: 'system' },
+  { key: 'sulfite',     label: 'Sulfite',         unit: 'ppm',   min: 0,   max: 20,   group: 'system' },
+  { key: 'tannin',      label: 'Tannin',          unit: 'ppm',   min: 0,   max: 5,    group: 'system' },
+  { key: 'chz',         label: 'CHZ',             unit: 'ppm',   min: 8,   max: 20,   group: 'system' },
+  { key: 'deha',        label: 'DEHA',            unit: 'ppm',   min: 3,   max: 10,   group: 'system' },
+  { key: 'silica',      label: 'Silica',          unit: 'ppm',   min: 0,   max: 30,   group: 'system' },
+  // ── Make-up water ──────────────────────────────────────────────────────────
+  { key: 'muPH',          label: 'pH',              unit: '',      min: 6.5, max: 8.5,  group: 'makeup' },
+  { key: 'muTDS',         label: 'TDS',             unit: 'ppm',   min: 0,   max: 500,  group: 'makeup' },
+  { key: 'muConductivity',label: 'Conductivity',    unit: 'µS/cm', min: 0,   max: 1200, group: 'makeup' },
+  { key: 'muTotalHard',   label: 'Total Hardness',  unit: 'ppm',   min: 0,   max: 300,  group: 'makeup' },
+  { key: 'muCalciumHard', label: 'Calcium Hardness',unit: 'ppm',   min: 0,   max: 200,  group: 'makeup' },
+  { key: 'muMAlka',       label: 'M-Alkalinity',    unit: 'ppm',   min: 80,  max: 300,  group: 'makeup' },
+  { key: 'muChloride',    label: 'Chloride',        unit: 'ppm',   min: 0,   max: 100,  group: 'makeup' },
+  { key: 'muIron',        label: 'Iron',            unit: 'ppm',   min: 0,   max: 0.5,  group: 'makeup' },
+  // ── Feed water ─────────────────────────────────────────────────────────────
+  { key: 'fwPH',          label: 'pH',              unit: '',      min: 6.5, max: 8.5,  group: 'feedwater' },
+  { key: 'fwTDS',         label: 'TDS',             unit: 'ppm',   min: 0,   max: 500,  group: 'feedwater' },
+  { key: 'fwConductivity',label: 'Conductivity',    unit: 'µS/cm', min: 0,   max: 1200, group: 'feedwater' },
+  { key: 'fwTotalHard',   label: 'Total Hardness',  unit: 'ppm',   min: 0,   max: 300,  group: 'feedwater' },
+  { key: 'fwCalciumHard', label: 'Calcium Hardness',unit: 'ppm',   min: 0,   max: 200,  group: 'feedwater' },
+  { key: 'fwMAlka',       label: 'M-Alkalinity',    unit: 'ppm',   min: 80,  max: 300,  group: 'feedwater' },
+  { key: 'fwChloride',    label: 'Chloride',        unit: 'ppm',   min: 0,   max: 100,  group: 'feedwater' },
+  { key: 'fwIron',        label: 'Iron',            unit: 'ppm',   min: 0,   max: 0.5,  group: 'feedwater' },
 ];
+
+export const PARAM_GROUP_LABELS: Record<string, string> = {
+  system:    '🔵 System Water',
+  makeup:    '🟡 Make-up Water',
+  feedwater: '🟢 Feed Water',
+};
 
 export const STATUS_COLORS: Record<Status, { bg: string; text: string; dot: string }> = {
   'Active':    { bg: '#d1fae5', text: '#065f46', dot: '#10b981' },

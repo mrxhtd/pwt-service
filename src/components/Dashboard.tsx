@@ -57,7 +57,7 @@ export function Dashboard({ clients, surveys, products, stocks }: DashboardProps
           site: client?.name ?? s.clientId,
           date: s.date,
           param: p.label,
-          val: s[p.key],
+          val: s[p.key] ?? '',
           unit: p.unit,
           min: p.min,
           max: p.max,

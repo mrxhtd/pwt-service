@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { ACCENT, PARAMS, STATUSES, STORAGE_KEYS, SYSTEM_TYPES } from '../constants';
+import { ACCENT, PARAM_GROUP_LABELS, PARAMS, STATUSES, STORAGE_KEYS, SYSTEM_TYPES } from '../constants';
 import { getStatus } from '../lib/status';
 import { extractClientFromImage } from '../lib/gemini';
 import { loadString } from '../lib/storage';
-import type { Client, ParamKey, Status, Survey, SystemType } from '../types';
+import type { Client, ParamGroup, ParamKey, Status, Survey, SystemType } from '../types';
+const GROUPS: ParamGroup[] = ['system', 'makeup', 'feedwater'];
 
 interface PhotoClientDialogProps {
   clientCount: number;
@@ -203,28 +204,38 @@ export function PhotoClientDialog({ clientCount, surveyCount, onClose, onSave, o
                 <div style={{ marginBottom: 10 }}>
                   <Field label="Date" type="date" value={survey.date} onChange={(v) => setS('date', v)} />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))', gap: 8, marginBottom: 10 }}>
-                  {PARAMS.map((p) => {
-                    const val = survey[p.key];
-                    const st = getStatus(val, p.min, p.max);
-                    const borderColor = st === 'out' ? '#ef4444' : st === 'ok' ? '#10b981' : '#e2e8f0';
-                    const bg = st === 'out' ? '#fef2f2' : st === 'ok' ? '#f0fdf4' : '#fff';
-                    return (
-                      <div key={p.key} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                        <label style={{ fontSize: 9, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.4 }}>
-                          {p.label}{p.unit && <span style={{ color: '#94a3b8' }}> ({p.unit})</span>}
-                        </label>
-                        <input
-                          type="number"
-                          value={val}
-                          onChange={(e) => setS(p.key, e.target.value)}
-                          placeholder={`${p.min}–${p.max}`}
-                          style={{ border: `1.5px solid ${borderColor}`, borderRadius: 6, padding: '5px 7px', fontSize: 12, color: '#1e293b', outline: 'none', background: bg }}
-                        />
+                {GROUPS.map((group) => {
+                  const groupParams = PARAMS.filter((p) => p.group === group);
+                  return (
+                    <div key={group} style={{ marginBottom: 12 }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6, paddingBottom: 4, borderBottom: '1px solid #e2e8f0' }}>
+                        {PARAM_GROUP_LABELS[group]}
                       </div>
-                    );
-                  })}
-                </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))', gap: 8 }}>
+                        {groupParams.map((p) => {
+                          const val = survey[p.key];
+                          const st = getStatus(val, p.min, p.max);
+                          const borderColor = st === 'out' ? '#ef4444' : st === 'ok' ? '#10b981' : '#e2e8f0';
+                          const bg = st === 'out' ? '#fef2f2' : st === 'ok' ? '#f0fdf4' : '#fff';
+                          return (
+                            <div key={p.key} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                              <label style={{ fontSize: 9, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+                                {p.label}{p.unit && <span style={{ color: '#94a3b8' }}> ({p.unit})</span>}
+                              </label>
+                              <input
+                                type="number"
+                                value={val ?? ''}
+                                onChange={(e) => setS(p.key, e.target.value)}
+                                placeholder={`${p.min}–${p.max}`}
+                                style={{ border: `1.5px solid ${borderColor}`, borderRadius: 6, padding: '5px 7px', fontSize: 12, color: '#1e293b', outline: 'none', background: bg }}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
                 <div>
                   <label style={labelStyle}>Notes</label>
                   <textarea value={survey.notes} onChange={(e) => setS('notes', e.target.value)} rows={2}
