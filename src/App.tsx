@@ -6,6 +6,7 @@ import { Dashboard } from './components/Dashboard';
 import { Header, type TabKey } from './components/Header';
 import { ClientDetail } from './components/ClientDetail';
 import { PhotoSurveyDialog } from './components/PhotoSurveyDialog';
+import { PhotoClientDialog } from './components/PhotoClientDialog';
 import { SettingsDialog } from './components/SettingsDialog';
 import { usePersistedState } from './lib/storage';
 import type { ClientDraft } from './components/ClientForm';
@@ -51,6 +52,7 @@ export default function App() {
   const [clientDraft, setClientDraft] = useState<ClientDraft>(() => makeClientDraft(clients.length));
 
   const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
+  const [photoClientOpen, setPhotoClientOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const selectedClient = selectedClientId ? clients.find((c) => c.id === selectedClientId) ?? null : null;
@@ -71,6 +73,12 @@ export default function App() {
   const openClient = (c: Client) => {
     setSelectedClientId(c.id);
     setTab('clients');
+  };
+
+  const saveClientFromPhoto = (newClient: Client, newSurvey: Survey | null) => {
+    setClients((cs) => [...cs, newClient]);
+    if (newSurvey) setSurveys((arr) => [...arr, newSurvey]);
+    setPhotoClientOpen(false);
   };
 
   const onNewManual = () => {
@@ -105,6 +113,7 @@ export default function App() {
             onClientDraft={setClientDraft}
             onSaveClient={saveClient}
             onSelectClient={openClient}
+            onAddFromPhoto={() => setPhotoClientOpen(true)}
           />
         )}
 
@@ -136,6 +145,16 @@ export default function App() {
             setPhotoDialogOpen(false);
             setSettingsOpen(true);
           }}
+        />
+      )}
+
+      {photoClientOpen && (
+        <PhotoClientDialog
+          clientCount={clients.length}
+          surveyCount={surveys.length}
+          onClose={() => setPhotoClientOpen(false)}
+          onSave={saveClientFromPhoto}
+          onOpenSettings={() => { setPhotoClientOpen(false); setSettingsOpen(true); }}
         />
       )}
 

@@ -18,6 +18,7 @@ interface ClientsTabProps {
   onClientDraft: (d: ClientDraft) => void;
   onSaveClient: () => void;
   onSelectClient: (client: Client) => void;
+  onAddFromPhoto: () => void;
 }
 
 const FILTERS: FilterStatus[] = ['All', 'Active', 'Follow-up', 'Inactive'];
@@ -35,6 +36,7 @@ export function ClientsTab({
   onClientDraft,
   onSaveClient,
   onSelectClient,
+  onAddFromPhoto,
 }: ClientsTabProps) {
   const filtered = filterStatus === 'All' ? clients : clients.filter((c) => c.status === filterStatus);
   const counts = {
@@ -47,12 +49,20 @@ export function ClientsTab({
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>Client Registry</h2>
-        <button
-          onClick={() => onShowForm(true)}
-          style={{ background: ACCENT, color: '#fff', border: 'none', borderRadius: 9, padding: '9px 18px', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}
-        >
-          + Add Client
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={onAddFromPhoto}
+            style={{ background: '#f1f5f9', color: '#334155', border: '1.5px solid #e2e8f0', borderRadius: 9, padding: '9px 16px', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}
+          >
+            📋 From Photo
+          </button>
+          <button
+            onClick={() => onShowForm(true)}
+            style={{ background: ACCENT, color: '#fff', border: 'none', borderRadius: 9, padding: '9px 18px', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}
+          >
+            + Add Client
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
