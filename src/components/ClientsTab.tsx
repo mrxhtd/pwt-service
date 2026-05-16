@@ -1,5 +1,5 @@
 import { ACCENT } from '../constants';
-import type { Client, Survey } from '../types';
+import type { Client, Product, StockMap, Survey } from '../types';
 import { Badge } from './Badge';
 import { ClientForm, type ClientDraft } from './ClientForm';
 
@@ -8,6 +8,8 @@ type FilterStatus = 'All' | 'Active' | 'Follow-up' | 'Inactive';
 interface ClientsTabProps {
   clients: Client[];
   surveys: Survey[];
+  products: Product[];
+  stocks: StockMap;
   filterStatus: FilterStatus;
   onFilterStatus: (f: FilterStatus) => void;
   showForm: boolean;
@@ -15,7 +17,7 @@ interface ClientsTabProps {
   clientDraft: ClientDraft;
   onClientDraft: (d: ClientDraft) => void;
   onSaveClient: () => void;
-  onOpenSurveyFor: (client: Client) => void;
+  onSelectClient: (client: Client) => void;
 }
 
 const FILTERS: FilterStatus[] = ['All', 'Active', 'Follow-up', 'Inactive'];
@@ -23,6 +25,8 @@ const FILTERS: FilterStatus[] = ['All', 'Active', 'Follow-up', 'Inactive'];
 export function ClientsTab({
   clients,
   surveys,
+  products,
+  stocks,
   filterStatus,
   onFilterStatus,
   showForm,
@@ -30,7 +34,7 @@ export function ClientsTab({
   clientDraft,
   onClientDraft,
   onSaveClient,
-  onOpenSurveyFor,
+  onSelectClient,
 }: ClientsTabProps) {
   const filtered = filterStatus === 'All' ? clients : clients.filter((c) => c.status === filterStatus);
   const counts = {
@@ -51,7 +55,7 @@ export function ClientsTab({
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         {FILTERS.map((s) => (
           <button
             key={s}
@@ -74,9 +78,24 @@ export function ClientsTab({
 
       <div style={{ display: 'grid', gap: 12 }}>
         {filtered.map((c) => {
-          const clientSurveys = surveys.filter((s) => s.clientId === c.id);
+          const surveyCount = surveys.filter((s) => s.clientId === c.id).length;
+          const clientStocks = stocks[c.id] ?? {};
+          const totalStock = Object.values(clientStocks).reduce((a, b) => a + (b || 0), 0);
+          const lowProducts = products.filter((p) => (clientStocks[p.id] ?? 0) <= 10).length;
           return (
-            <div key={c.id} style={{ background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: 14, padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, boxShadow: '0 1px 6px rgba(0,0,0,0.04)', flexWrap: 'wrap' }}>
+            <button
+              key={c.id}
+              onClick={() => onSelectClient(c)}
+              style={{ all: 'unset', cursor: 'pointer', background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: 14, padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, boxShadow: '0 1px 6px rgba(0,0,0,0.04)', flexWrap: 'wrap', boxSizing: 'border-box', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = ACCENT;
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(14, 165, 233, 0.12)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#e2e8f0';
+                e.currentTarget.style.boxShadow = '0 1px 6px rgba(0,0,0,0.04)';
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <div style={{ width: 42, height: 42, borderRadius: 12, background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🏭</div>
                 <div>
@@ -86,18 +105,14 @@ export function ClientsTab({
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
                 <Stat label="SYSTEM" value={c.systemType} />
-                <Stat label="GALLONS" value={Number(c.gallons || 0).toLocaleString()} />
-                <Stat label="SURVEYS" value={String(clientSurveys.length)} />
+                <Stat label="STOCK" value={`${totalStock.toLocaleString()} gal`} />
+                {lowProducts > 0 && <Stat label="LOW" value={String(lowProducts)} warn />}
+                <Stat label="SURVEYS" value={String(surveyCount)} />
                 <Stat label="NEXT VISIT" value={c.nextVisit || '—'} accent />
                 <Badge status={c.status} />
-                <button
-                  onClick={() => onOpenSurveyFor(c)}
-                  style={{ background: '#f0fdf4', color: '#16a34a', border: '1.5px solid #bbf7d0', borderRadius: 8, padding: '6px 14px', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}
-                >
-                  + Survey
-                </button>
+                <span style={{ color: ACCENT, fontWeight: 700, fontSize: 16 }}>›</span>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -105,11 +120,12 @@ export function ClientsTab({
   );
 }
 
-function Stat({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
+function Stat({ label, value, accent = false, warn = false }: { label: string; value: string; accent?: boolean; warn?: boolean }) {
+  const color = warn ? '#dc2626' : accent ? ACCENT : undefined;
   return (
     <div style={{ textAlign: 'center' }}>
       <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>{label}</div>
-      <div style={{ fontSize: 13, fontWeight: 600, marginTop: 2, color: accent ? ACCENT : undefined }}>{value}</div>
+      <div style={{ fontSize: 13, fontWeight: 600, marginTop: 2, color }}>{value}</div>
     </div>
   );
 }

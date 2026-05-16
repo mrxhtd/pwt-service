@@ -1,6 +1,6 @@
 import { ACCENT } from '../constants';
 
-export type TabKey = 'clients' | 'surveys' | 'dashboard';
+export type TabKey = 'clients' | 'dashboard';
 
 interface NavItem {
   key: TabKey;
@@ -12,13 +12,12 @@ interface HeaderProps {
   tab: TabKey;
   onTab: (t: TabKey) => void;
   clientCount: number;
-  surveyCount: number;
+  onOpenSettings: () => void;
 }
 
-export function Header({ tab, onTab, clientCount, surveyCount }: HeaderProps) {
+export function Header({ tab, onTab, clientCount, onOpenSettings }: HeaderProps) {
   const nav: NavItem[] = [
     { key: 'clients',   label: '🏢 Clients',   badge: clientCount },
-    { key: 'surveys',   label: '🧪 Surveys',   badge: surveyCount },
     { key: 'dashboard', label: '📊 Dashboard', badge: null },
   ];
 
@@ -28,7 +27,7 @@ export function Header({ tab, onTab, clientCount, surveyCount }: HeaderProps) {
         <span style={{ fontSize: 22 }}>💧</span>
         <span style={{ color: '#fff', fontWeight: 700, fontSize: 16, letterSpacing: -0.5 }}>AquaTrack CRM</span>
       </div>
-      <div style={{ display: 'flex', gap: 4 }}>
+      <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
         {nav.map((n) => (
           <button
             key={n.key}
@@ -43,6 +42,13 @@ export function Header({ tab, onTab, clientCount, surveyCount }: HeaderProps) {
             )}
           </button>
         ))}
+        <button
+          onClick={onOpenSettings}
+          title="Settings"
+          style={{ background: 'transparent', color: '#94a3b8', border: 'none', borderRadius: 8, padding: '6px 10px', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginLeft: 4 }}
+        >
+          ⚙
+        </button>
       </div>
     </div>
   );

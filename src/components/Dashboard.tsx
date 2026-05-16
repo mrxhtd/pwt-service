@@ -1,11 +1,13 @@
 import { ACCENT, PARAMS } from '../constants';
 import { getStatus } from '../lib/status';
-import type { Client, Survey } from '../types';
+import type { Client, Product, StockMap, Survey } from '../types';
 import { Badge } from './Badge';
 
 interface DashboardProps {
   clients: Client[];
   surveys: Survey[];
+  products: Product[];
+  stocks: StockMap;
 }
 
 interface Alert {
@@ -18,15 +20,28 @@ interface Alert {
   max: number;
 }
 
-export function Dashboard({ clients, surveys }: DashboardProps) {
-  const totalGallons = clients.reduce((a, c) => a + Number(c.gallons || 0), 0);
+const LOW_THRESHOLD = 10;
+
+export function Dashboard({ clients, surveys, products, stocks }: DashboardProps) {
+  const totalStock = clients.reduce(
+    (sum, c) => sum + Object.values(stocks[c.id] ?? {}).reduce((a, b) => a + (b || 0), 0),
+    0,
+  );
+  const lowStockEntries: Array<{ client: Client; product: Product; level: number }> = [];
+  for (const c of clients) {
+    for (const p of products) {
+      const level = stocks[c.id]?.[p.id] ?? 0;
+      if (level <= LOW_THRESHOLD) lowStockEntries.push({ client: c, product: p, level });
+    }
+  }
 
   const kpis = [
-    { label: 'Total Clients',     val: clients.length,                                                   icon: '🏢', color: '#0ea5e9' },
-    { label: 'Active Sites',      val: clients.filter((c) => c.status === 'Active').length,             icon: '✅', color: '#10b981' },
-    { label: 'Follow-up Required',val: clients.filter((c) => c.status === 'Follow-up').length,          icon: '⚠️', color: '#f59e0b' },
-    { label: 'Total Surveys',     val: surveys.length,                                                   icon: '🧪', color: '#8b5cf6' },
-    { label: 'Total Gallons',     val: totalGallons.toLocaleString(),                                    icon: '💧', color: '#06b6d4' },
+    { label: 'Total Clients',      val: clients.length,                                        icon: '🏢', color: '#0ea5e9' },
+    { label: 'Active Sites',       val: clients.filter((c) => c.status === 'Active').length,  icon: '✅', color: '#10b981' },
+    { label: 'Follow-up Required', val: clients.filter((c) => c.status === 'Follow-up').length,icon: '⚠️', color: '#f59e0b' },
+    { label: 'Total Surveys',      val: surveys.length,                                        icon: '🧪', color: '#8b5cf6' },
+    { label: 'Total Stock (gal)',  val: totalStock.toLocaleString(),                           icon: '💧', color: '#06b6d4' },
+    { label: 'Low Stock Items',    val: lowStockEntries.length,                                icon: '📦', color: '#f43f5e' },
   ];
 
   const upcoming = [...clients]
@@ -68,6 +83,7 @@ export function Dashboard({ clients, surveys }: DashboardProps) {
       <div style={{ background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: 14, padding: 20, marginBottom: 20 }}>
         <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 700 }}>📅 Upcoming Follow-ups</h3>
         <div style={{ display: 'grid', gap: 8 }}>
+          {upcoming.length === 0 && <div style={{ color: '#94a3b8', fontSize: 13 }}>None scheduled.</div>}
           {upcoming.map((c) => (
             <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#f8fafc', borderRadius: 10 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -79,6 +95,28 @@ export function Dashboard({ clients, surveys }: DashboardProps) {
           ))}
         </div>
       </div>
+
+      {lowStockEntries.length > 0 && (
+        <div style={{ background: '#fff', border: '1.5px solid #fed7aa', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+          <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 700, color: '#c2410c' }}>📦 Low Stock</h3>
+          <div style={{ display: 'grid', gap: 8 }}>
+            {lowStockEntries.map((e) => {
+              const empty = e.level <= 0;
+              return (
+                <div key={`${e.client.id}-${e.product.id}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: empty ? '#fef2f2' : '#fff7ed', borderRadius: 10 }}>
+                  <div>
+                    <span style={{ fontWeight: 700, fontSize: 13 }}>{e.client.name}</span>
+                    <span style={{ color: '#64748b', fontSize: 12, marginLeft: 8 }}>{e.product.name}</span>
+                  </div>
+                  <span style={{ fontWeight: 700, fontSize: 13, color: empty ? '#dc2626' : '#c2410c' }}>
+                    {e.level} {e.product.unit} {empty && '· OUT'}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {alerts.length > 0 && (
         <div style={{ background: '#fff', border: '1.5px solid #fecaca', borderRadius: 14, padding: 20 }}>

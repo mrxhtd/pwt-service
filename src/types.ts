@@ -42,16 +42,22 @@ export interface Client {
   contact: string;
   phone: string;
   systemType: SystemType;
-  gallons: number | '';
   status: Status;
   lastVisit: string;
   nextVisit: string;
 }
 
+export interface Product {
+  id: string;
+  name: string;
+  unit: string;
+}
+
+export type StockMap = Record<string, Record<string, number>>;
+
 export type Survey = {
   id: string;
   clientId: string;
   date: string;
-  gallons: number | '';
   notes: string;
 } & { [K in ParamKey]: number | '' };

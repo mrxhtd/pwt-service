@@ -3,7 +3,7 @@ import type { Client, Status, SystemType } from '../types';
 import { Input } from './Input';
 import { Select } from './Select';
 
-export type ClientDraft = Omit<Client, 'gallons'> & { gallons: number | '' };
+export type ClientDraft = Client;
 
 interface ClientFormProps {
   draft: ClientDraft;
@@ -24,7 +24,6 @@ export function ClientForm({ draft, onChange, onSave, onCancel }: ClientFormProp
         <Input label="Contact Person" value={draft.contact} onChange={(v) => set('contact', v)} />
         <Input label="Phone" value={draft.phone} onChange={(v) => set('phone', v)} />
         <Select label="System Type" value={draft.systemType} onChange={(v) => set('systemType', v as SystemType)} options={SYSTEM_TYPES} />
-        <Input label="Total Gallons" type="number" value={draft.gallons} onChange={(v) => set('gallons', v === '' ? '' : Number(v))} />
         <Select label="Status" value={draft.status} onChange={(v) => set('status', v as Status)} options={STATUSES} />
         <Input label="Next Follow-up" type="date" value={draft.nextVisit} onChange={(v) => set('nextVisit', v)} />
       </div>
