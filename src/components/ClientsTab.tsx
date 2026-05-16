@@ -120,6 +120,17 @@ export function ClientsTab({
                 <Stat label="SURVEYS" value={String(surveyCount)} />
                 <Stat label="NEXT VISIT" value={c.nextVisit || '—'} accent />
                 <Badge status={c.status} />
+                {(() => {
+                  const daysRemaining = c.avgDailyConsumption && c.avgDailyConsumption > 0
+                    ? (c.currentStock ?? 0) / c.avgDailyConsumption
+                    : null;
+                  const needsReorder = daysRemaining !== null && daysRemaining <= (c.deliveryLeadTime ?? 3);
+                  return needsReorder ? (
+                    <span style={{ background: 'linear-gradient(135deg, #f97316, #dc2626)', color: '#fff', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap' }}>
+                      ⚠️ Low Stock / Send Proposal
+                    </span>
+                  ) : null;
+                })()}
                 <span style={{ color: ACCENT, fontWeight: 700, fontSize: 16 }}>›</span>
               </div>
             </button>

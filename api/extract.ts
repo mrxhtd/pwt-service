@@ -2,8 +2,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const SYSTEM_PARAMS = [
   { key: 'ph',          label: 'pH',               unit: '',      min: 6.5, max: 8.5  },
-  { key: 'tds',         label: 'TDS',              unit: 'ppm',   min: 0,   max: 500  },
-  { key: 'conductivity',label: 'Conductivity',     unit: 'µS/cm', min: 0,   max: 1200 },
+  { key: 'tds',         label: 'TDS',              unit: 'ppm',   min: 0,   max: 500,  desc: 'TDS meaning Total Dissolved Solids, measured in ppm. This is NOT the same as conductivity. TDS is typically a larger number than conductivity on the sheet. Range 0–500 ppm' },
+  { key: 'conductivity',label: 'Conductivity',     unit: 'µS/cm', min: 0,   max: 3000, desc: 'Electrical conductivity measured in µS/cm or mS/cm. This is NOT the same as TDS. Look specifically for the label "Conductivity" or "EC" on the sheet. Range 0–3000 µS/cm' },
   { key: 'totalHard',   label: 'Total Hardness',   unit: 'ppm',   min: 0,   max: 300  },
   { key: 'calciumHard', label: 'Calcium Hardness', unit: 'ppm',   min: 0,   max: 200  },
   { key: 'pAlka',       label: 'P-Alkalinity',     unit: 'ppm',   min: 0,   max: 100  },
@@ -35,10 +35,15 @@ const DEFAULT_MODEL = 'gemini-2.5-flash';
 
 // ─── Prompts ─────────────────────────────────────────────────────────────────
 
+function sysParamLine(p: typeof SYSTEM_PARAMS[number]) {
+  if (p.desc) return `- ${p.key}: ${p.desc}`;
+  return `- ${p.key}: ${p.label}${p.unit ? ` (${p.unit})` : ''}, range ${p.min}–${p.max}`;
+}
+
+const TDS_CONDUCTIVITY_WARNING = 'IMPORTANT: Do NOT confuse TDS (ppm) with Conductivity (µS/cm or mS/cm). They are always separate labeled fields on the sheet. If you are uncertain which value belongs to which field, leave both as empty strings rather than guessing.';
+
 function surveyPrompt() {
-  const sysParams = SYSTEM_PARAMS.map(
-    (p) => `- ${p.key}: ${p.label}${p.unit ? ` (${p.unit})` : ''}, range ${p.min}–${p.max}`,
-  ).join('\n');
+  const sysParams = SYSTEM_PARAMS.map(sysParamLine).join('\n');
   const waterParams = WATER_PARAMS.map((p) => `- ${p.key}: ${p.label}${p.unit ? ` (${p.unit})` : ''}`).join('\n');
 
   return [
@@ -47,6 +52,8 @@ function surveyPrompt() {
     '  1. System/Circulating water (the treated water in the system)',
     '  2. Make-up water (raw incoming water, also called "Make Up" or "Makeup")',
     '  3. Feed water (pre-treated water entering the system, also called "Feed")',
+    '',
+    TDS_CONDUCTIVITY_WARNING,
     '',
     'Extract ALL columns. If a column is absent or a cell is unreadable, return an empty string for that field.',
     'Return ONLY a JSON object — no commentary, no markdown.',
@@ -67,15 +74,15 @@ function surveyPrompt() {
 }
 
 function clientPrompt() {
-  const sysParams = SYSTEM_PARAMS.map(
-    (p) => `- ${p.key}: ${p.label}${p.unit ? ` (${p.unit})` : ''}, range ${p.min}–${p.max}`,
-  ).join('\n');
+  const sysParams = SYSTEM_PARAMS.map(sysParamLine).join('\n');
   const waterParams = WATER_PARAMS.map((p) => `- ${p.key}: ${p.label}${p.unit ? ` (${p.unit})` : ''}`).join('\n');
 
   return [
     'You are reading a handwritten water-quality survey sheet from a field technician.',
     'Extract the site header information AND all water quality readings.',
     'The sheet typically has THREE columns: System/Circulating, Make-up, and Feed water.',
+    '',
+    TDS_CONDUCTIVITY_WARNING,
     '',
     'Site fields:',
     '- name: company or site name',

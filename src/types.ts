@@ -42,6 +42,17 @@ export interface Client {
   status: Status;
   lastVisit: string;
   nextVisit: string;
+  avgDailyConsumption?: number;
+  deliveryLeadTime?: number;
+  currentStock?: number;
+  lat?: number | null;
+  lng?: number | null;
+}
+
+export interface QueuedSurvey {
+  id: string;
+  payload: Survey;
+  timestamp: number;
 }
 
 export interface Product {

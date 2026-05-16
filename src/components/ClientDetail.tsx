@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { ACCENT } from '../constants';
 import type { Client, Product, StockMap, Survey } from '../types';
 import { Badge } from './Badge';
 import { StocksPanel } from './StocksPanel';
 import { SurveysPanel } from './SurveysPanel';
+import { QuickLogSurvey } from './QuickLogSurvey';
+import { WhatsAppButton } from './WhatsAppButton';
+import { InvoiceButton } from './InvoiceButton';
 
 interface ClientDetailProps {
   client: Client;
@@ -13,6 +17,8 @@ interface ClientDetailProps {
   onBack: () => void;
   onNewSurveyFromPhoto: () => void;
   onNewSurveyManual: () => void;
+  onSubmitSurvey: (s: Survey) => void;
+  surveyCount: number;
 }
 
 export function ClientDetail({
@@ -24,7 +30,13 @@ export function ClientDetail({
   onBack,
   onNewSurveyFromPhoto,
   onNewSurveyManual,
+  onSubmitSurvey,
+  surveyCount,
 }: ClientDetailProps) {
+  const [showQuickLog, setShowQuickLog] = useState(false);
+  const clientSurveys = surveys.filter((s) => s.clientId === client.id);
+  const latestSurvey = clientSurveys[0] ?? null;
+
   return (
     <div>
       <button
@@ -49,6 +61,39 @@ export function ClientDetail({
           <Badge status={client.status} />
         </div>
       </div>
+
+      {/* Action bar: Quick Log + WhatsApp + Invoice */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+        <button
+          onClick={() => setShowQuickLog(true)}
+          style={{ background: ACCENT, color: '#fff', border: 'none', borderRadius: 9, padding: '8px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+        >
+          ⚡ Quick Log
+        </button>
+        {latestSurvey && (
+          <WhatsAppButton
+            phone={client.phone}
+            contactName={client.contact}
+            companyName={client.name}
+            survey={latestSurvey}
+          />
+        )}
+        <InvoiceButton client={client} products={products} stocks={stocks} />
+      </div>
+
+      {showQuickLog && (
+        <div style={{ marginBottom: 16 }}>
+          <QuickLogSurvey
+            clientId={client.id}
+            surveyCount={surveyCount}
+            onSubmit={(s) => {
+              onSubmitSurvey(s);
+              setShowQuickLog(false);
+            }}
+            onCancel={() => setShowQuickLog(false)}
+          />
+        </div>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 16 }}>
         <StocksPanel
