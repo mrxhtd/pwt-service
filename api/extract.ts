@@ -1,22 +1,22 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const SYSTEM_PARAMS = [
-  { key: 'ph',          label: 'pH',               unit: '',      min: 6.5, max: 8.5  },
-  { key: 'tds',         label: 'TDS',              unit: 'ppm',   min: 0,   max: 500,  desc: 'TDS meaning Total Dissolved Solids, measured in ppm. This is NOT the same as conductivity. TDS is typically a larger number than conductivity on the sheet. Range 0–500 ppm' },
-  { key: 'conductivity',label: 'Conductivity',     unit: 'µS/cm', min: 0,   max: 3000, desc: 'Electrical conductivity measured in µS/cm or mS/cm. This is NOT the same as TDS. Look specifically for the label "Conductivity" or "EC" on the sheet. Range 0–3000 µS/cm' },
-  { key: 'totalHard',   label: 'Total Hardness',   unit: 'ppm',   min: 0,   max: 300  },
-  { key: 'calciumHard', label: 'Calcium Hardness', unit: 'ppm',   min: 0,   max: 200  },
-  { key: 'pAlka',       label: 'P-Alkalinity',     unit: 'ppm',   min: 0,   max: 100  },
-  { key: 'mAlka',       label: 'M-Alkalinity',     unit: 'ppm',   min: 80,  max: 300  },
-  { key: 'ohAlka',      label: 'OH-Alkalinity',    unit: 'ppm',   min: 0,   max: 50   },
-  { key: 'chloride',    label: 'Chloride',         unit: 'ppm',   min: 0,   max: 100  },
-  { key: 'iron',        label: 'Iron',             unit: 'ppm',   min: 0,   max: 0.5  },
-  { key: 'phosphate',   label: 'Phosphate',        unit: 'ppm',   min: 2,   max: 8    },
-  { key: 'sulfite',     label: 'Sulfite',          unit: 'ppm',   min: 0,   max: 20   },
-  { key: 'tannin',      label: 'Tannin',           unit: 'ppm',   min: 0,   max: 5    },
-  { key: 'chz',         label: 'CHZ',              unit: 'ppm',   min: 8,   max: 20   },
-  { key: 'deha',        label: 'DEHA',             unit: 'ppm',   min: 3,   max: 10   },
-  { key: 'silica',      label: 'Silica',           unit: 'ppm',   min: 0,   max: 30   },
+  { key: 'ph',          label: 'pH',               unit: '',      min: 10.5, max: 12    },
+  { key: 'tds',         label: 'TDS',              unit: 'ppm',   min: 0,    max: 3500, desc: 'TDS meaning Total Dissolved Solids, measured in ppm. This is NOT the same as conductivity. TDS is typically a larger number than conductivity on the sheet. Range 0–3500 ppm' },
+  { key: 'conductivity',label: 'Conductivity',     unit: 'µS/cm', min: 0,    max: 7000, desc: 'Electrical conductivity measured in µS/cm or mS/cm. This is NOT the same as TDS. Look specifically for the label "Conductivity" or "EC" on the sheet. Range 0–7000 µS/cm' },
+  { key: 'totalHard',   label: 'Total Hardness',   unit: 'ppm',   min: 0,    max: 5    },
+  { key: 'calciumHard', label: 'Calcium Hardness', unit: 'ppm',   min: 0,    max: 2    },
+  { key: 'pAlka',       label: 'P-Alkalinity',     unit: 'ppm',   min: 0,    max: 700  },
+  { key: 'mAlka',       label: 'M-Alkalinity',     unit: 'ppm',   min: 0,    max: 1000 },
+  { key: 'ohAlka',      label: 'OH-Alkalinity',    unit: 'ppm',   min: 350,  max: 500  },
+  { key: 'chloride',    label: 'Chloride',         unit: 'ppm',   min: 0,    max: 800  },
+  { key: 'iron',        label: 'Iron',             unit: 'ppm',   min: 0,    max: 0.5  },
+  { key: 'phosphate',   label: 'Phosphate',        unit: 'ppm',   min: 30,   max: 60   },
+  { key: 'sulfite',     label: 'Sulfite',          unit: 'ppm',   min: 30,   max: 70   },
+  { key: 'tannin',      label: 'Tannin',           unit: 'ppm',   min: 120,  max: 160  },
+  { key: 'chz',         label: 'CHZ',              unit: 'ppm',   min: 50,   max: 100  },
+  { key: 'deha',        label: 'DEHA',             unit: 'ppm',   min: 100,  max: 500  },
+  { key: 'silica',      label: 'Silica',           unit: 'ppm',   min: 0,    max: 30   },
 ];
 
 const WATER_PARAMS = [
