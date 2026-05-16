@@ -64,6 +64,7 @@ export const SEED_STOCKS: StockMap = {
 
 export const SEED_SURVEYS: Survey[] = [
   { id: 'SRV-001', clientId: 'CLT-001', date: '2026-04-15', ph: 7.2, tds: 320, conductivity: 680, totalHard: 250, calciumHard: 95,  pAlka: 45, mAlka: 180, ohAlka: 0, chloride: 85,  iron: 0.3, phosphate: 3.5, sulfite: 12, tannin: 0.2, chz: 12, deha: 5, silica: 18, notes: 'Slight pH drift.' },
+  { id: 'SRV-004', clientId: 'CLT-001', date: '2026-03-18', ph: 7.5, tds: 295, conductivity: 640, totalHard: 230, calciumHard: 88,  pAlka: 40, mAlka: 165, ohAlka: 0, chloride: 78,  iron: 0.4, phosphate: 4.2, sulfite: 10, tannin: 0.3, chz: 14, deha: 6, silica: 15, notes: 'Baseline reading.' },
   { id: 'SRV-002', clientId: 'CLT-002', date: '2026-04-28', ph: 7.8, tds: 210, conductivity: 450, totalHard: 180, calciumHard: 70,  pAlka: 30, mAlka: 120, ohAlka: 0, chloride: 60,  iron: 0.1, phosphate: 2.1, sulfite: 8,  tannin: 0.1, chz: 8,  deha: 3, silica: 12, notes: 'Within range.' },
   { id: 'SRV-003', clientId: 'CLT-003', date: '2026-03-10', ph: 6.9, tds: 410, conductivity: 890, totalHard: 310, calciumHard: 120, pAlka: 55, mAlka: 220, ohAlka: 0, chloride: 110, iron: 0.5, phosphate: 5.0, sulfite: 15, tannin: 0.4, chz: 15, deha: 7, silica: 25, notes: 'High hardness. Dosing increased.' },
 ];
