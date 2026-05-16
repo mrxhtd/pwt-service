@@ -9,7 +9,7 @@ interface WhatsAppButtonProps {
   userName?: string;
 }
 
-export function WhatsAppButton({ phone, contactName, companyName, survey, userName = 'PWT Service' }: WhatsAppButtonProps) {
+export function WhatsAppButton({ contactName, companyName, survey, userName = 'PWT Service' }: WhatsAppButtonProps) {
   const waPhone = '201144747747'; // PWT Service WhatsApp
 
   const getStatus = (key: string): 'ok' | 'out' | 'empty' => {
