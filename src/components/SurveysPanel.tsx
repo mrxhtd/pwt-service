@@ -150,47 +150,54 @@ function MobileCards({ list }: { list: Survey[] }) {
       {list.map((s, idx) => {
         const prev = list[idx + 1];
         const outCount = PARAMS.filter((p) => getStatus(s[p.key], p.min, p.max) === 'out').length;
-        const filledParams = PARAMS.filter((p) => s[p.key] !== '' && s[p.key] != null);
+        const emptyCount = PARAMS.filter((p) => s[p.key] === '' || s[p.key] == null).length;
         return (
           <div key={s.id} style={{ border: '1.5px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
             {/* Card header */}
-            <div style={{ background: '#f8fafc', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0' }}>
+            <div style={{ background: '#f8fafc', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', flexWrap: 'wrap', gap: 6 }}>
               <div>
                 <span style={{ fontSize: 12, fontWeight: 700, color: ACCENT }}>{s.id}</span>
                 <span style={{ marginLeft: 8, fontSize: 14, fontWeight: 800, color: '#1e293b' }}>{s.date}</span>
                 {prev && <span style={{ marginLeft: 6, fontSize: 11, color: '#94a3b8' }}>vs {prev.date}</span>}
               </div>
-              {outCount > 0 ? (
-                <span style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700 }}>
-                  ⚠ {outCount} out
-                </span>
-              ) : (
-                <span style={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700 }}>
-                  ✓ OK
-                </span>
-              )}
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {outCount === 0 && emptyCount === 0 && (
+                  <span style={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700 }}>✓ All OK</span>
+                )}
+                {outCount > 0 && (
+                  <span style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700 }}>⚠ {outCount} out of range</span>
+                )}
+                {emptyCount > 0 && (
+                  <span style={{ background: '#f8fafc', color: '#94a3b8', border: '1px solid #e2e8f0', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 600 }}>{emptyCount} not recorded</span>
+                )}
+              </div>
             </div>
 
-            {/* 2-column parameter grid */}
+            {/* 2-column parameter grid — all 16 params always shown */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: '#e2e8f0' }}>
-              {filledParams.map((p) => {
+              {PARAMS.map((p) => {
                 const val = s[p.key];
                 const prevVal = prev?.[p.key];
+                const isEmpty = val === '' || val == null;
                 const st = getStatus(val, p.min, p.max);
-                const cellBg = st === 'out' ? '#fff5f5' : st === 'ok' ? '#f6fef9' : '#fff';
+                const cellBg = isEmpty ? '#fafbfc' : st === 'out' ? '#fff5f5' : st === 'ok' ? '#f6fef9' : '#fff';
                 const valColor = st === 'out' ? '#dc2626' : st === 'ok' ? '#16a34a' : '#475569';
                 const trend = getTrend(val, prevVal);
                 return (
                   <div key={p.key} style={{ background: cellBg, padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase' }}>{p.label}</div>
-                      <div style={{ fontSize: 10, color: '#cbd5e1' }}>{p.min}–{p.max}{p.unit ? ` ${p.unit}` : ''}</div>
+                      <div style={{ fontSize: 10, color: isEmpty ? '#cbd5e1' : '#94a3b8', fontWeight: 600, textTransform: 'uppercase' }}>{p.label}</div>
+                      <div style={{ fontSize: 10, color: '#e2e8f0' }}>{p.min}–{p.max}{p.unit ? ` ${p.unit}` : ''}</div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 3, textAlign: 'right' }}>
-                      <span style={{ fontSize: 14, fontWeight: 800, color: valColor }}>{val}</span>
-                      {p.unit && <span style={{ fontSize: 10, color: '#94a3b8' }}>{p.unit}</span>}
-                      {trend && <span style={{ fontSize: 12, fontWeight: 800, color: trend.color }}>{trend.arrow}</span>}
-                    </div>
+                    {isEmpty ? (
+                      <span style={{ fontSize: 12, color: '#cbd5e1', fontStyle: 'italic' }}>—</span>
+                    ) : (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 3, textAlign: 'right' }}>
+                        <span style={{ fontSize: 14, fontWeight: 800, color: valColor }}>{val}</span>
+                        {p.unit && <span style={{ fontSize: 10, color: '#94a3b8' }}>{p.unit}</span>}
+                        {trend && <span style={{ fontSize: 12, fontWeight: 800, color: trend.color }}>{trend.arrow}</span>}
+                      </div>
+                    )}
                   </div>
                 );
               })}
