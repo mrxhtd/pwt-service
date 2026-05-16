@@ -10,7 +10,7 @@ interface WhatsAppButtonProps {
 }
 
 export function WhatsAppButton({ phone, contactName, companyName, survey, userName = 'PWT Service' }: WhatsAppButtonProps) {
-  const cleanPhone = phone.replace(/[\s\-()]/g, '');
+  const waPhone = '201144747747'; // PWT Service WhatsApp
 
   const getStatus = (key: string): 'ok' | 'out' | 'empty' => {
     const val = (survey as Record<string, unknown>)[key];
@@ -49,7 +49,7 @@ export function WhatsAppButton({ phone, contactName, companyName, survey, userNa
   };
 
   const message = buildMessage();
-  const href = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+  const href = `https://wa.me/${waPhone}?text=${encodeURIComponent(message)}`;
 
   return (
     <a
