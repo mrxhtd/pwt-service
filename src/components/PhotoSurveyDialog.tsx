@@ -133,7 +133,6 @@ export function PhotoSurveyDialog({ client, surveyCount, onClose, onSave, onOpen
             <input
               type="file"
               accept="image/*"
-              capture="environment"
               style={{ display: 'none' }}
               onChange={(e) => onPick(e.target.files?.[0] ?? null)}
             />

@@ -140,7 +140,7 @@ export function PhotoClientDialog({ clientCount, surveyCount, onClose, onSave, o
             <div style={{ fontSize: 36, marginBottom: 8 }}>📋</div>
             <div style={{ fontWeight: 700, fontSize: 14, color: '#1e293b' }}>Take or upload a photo of the survey sheet</div>
             <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>JPG / PNG / HEIC — site header + readings will be extracted</div>
-            <input type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={(e) => onPick(e.target.files?.[0] ?? null)} />
+            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => onPick(e.target.files?.[0] ?? null)} />
           </label>
         )}
 
