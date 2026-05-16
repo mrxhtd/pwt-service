@@ -4,6 +4,7 @@ import { getStatus } from '../lib/status';
 import { extractSurveyFromImage, type ExtractedSurvey } from '../lib/gemini';
 import { loadString } from '../lib/storage';
 import type { Client, ParamKey, Survey } from '../types';
+// apiKey is now server-side; only model override is read from localStorage
 
 interface PhotoSurveyDialogProps {
   client: Client;
@@ -84,11 +85,6 @@ export function PhotoSurveyDialog({ client, surveyCount, onClose, onSave, onOpen
 
   const onExtract = async () => {
     if (!file) return;
-    const apiKey = loadString(STORAGE_KEYS.apiKey);
-    if (!apiKey) {
-      setError('Add your Gemini API key in Settings first.');
-      return;
-    }
     setError(null);
     setExtracting(true);
     abortRef.current?.abort();
@@ -96,7 +92,7 @@ export function PhotoSurveyDialog({ client, surveyCount, onClose, onSave, onOpen
     abortRef.current = ctrl;
     try {
       const model = loadString(STORAGE_KEYS.model) || undefined;
-      const ex = await extractSurveyFromImage(file, { apiKey, model, signal: ctrl.signal });
+      const ex = await extractSurveyFromImage(file, { model, signal: ctrl.signal });
       setDraft(extractedToDraft(ex));
       setExtracted(true);
     } catch (e) {

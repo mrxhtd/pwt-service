@@ -8,13 +8,10 @@ interface SettingsDialogProps {
 }
 
 export function SettingsDialog({ onClose }: SettingsDialogProps) {
-  const [apiKey, setApiKey] = useState(() => loadString(STORAGE_KEYS.apiKey));
   const [model, setModel] = useState(() => loadString(STORAGE_KEYS.model));
-  const [reveal, setReveal] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const save = () => {
-    saveString(STORAGE_KEYS.apiKey, apiKey.trim());
     saveString(STORAGE_KEYS.model, model.trim());
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
@@ -29,41 +26,28 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: 0.5, display: 'block', marginBottom: 4 }}>
-              Gemini API Key
-            </label>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <input
-                type={reveal ? 'text' : 'password'}
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="AIza…"
-                style={{ flex: 1, border: '1.5px solid #e2e8f0', borderRadius: 8, padding: '8px 10px', fontSize: 13, color: '#1e293b', outline: 'none', fontFamily: 'ui-monospace, Consolas, monospace' }}
-              />
-              <button
-                onClick={() => setReveal((r) => !r)}
-                style={{ background: '#f1f5f9', color: '#64748b', border: 'none', borderRadius: 8, padding: '0 12px', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}
-              >
-                {reveal ? 'Hide' : 'Show'}
-              </button>
-            </div>
-            <div style={{ fontSize: 11, color: '#64748b', marginTop: 6, lineHeight: 1.5 }}>
-              Get one at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer" style={{ color: ACCENT }}>aistudio.google.com/apikey</a>.
-              Stored only in your browser's localStorage.
+          {/* Server-side key notice */}
+          <div style={{ background: '#f0fdf4', border: '1.5px solid #bbf7d0', borderRadius: 10, padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <span style={{ fontSize: 18, lineHeight: 1.2 }}>🔑</span>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#15803d' }}>Gemini API key is configured server-side</div>
+              <div style={{ fontSize: 12, color: '#166534', marginTop: 2, lineHeight: 1.5 }}>
+                The key is stored securely on the server and shared across all devices automatically. No action needed.
+              </div>
             </div>
           </div>
 
+          {/* Model override */}
           <div>
             <label style={{ fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: 0.5, display: 'block', marginBottom: 4 }}>
-              Model (optional)
+              Model Override (optional)
             </label>
             <input
               type="text"
               value={model}
               onChange={(e) => setModel(e.target.value)}
               placeholder={DEFAULT_GEMINI_MODEL}
-              style={{ width: '100%', border: '1.5px solid #e2e8f0', borderRadius: 8, padding: '8px 10px', fontSize: 13, color: '#1e293b', outline: 'none', fontFamily: 'ui-monospace, Consolas, monospace' }}
+              style={{ width: '100%', border: '1.5px solid #e2e8f0', borderRadius: 8, padding: '8px 10px', fontSize: 13, color: '#1e293b', outline: 'none', fontFamily: 'ui-monospace, Consolas, monospace', boxSizing: 'border-box' }}
             />
             <div style={{ fontSize: 11, color: '#64748b', marginTop: 6 }}>
               Defaults to <code>{DEFAULT_GEMINI_MODEL}</code> if blank.

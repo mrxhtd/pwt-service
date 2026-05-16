@@ -72,8 +72,6 @@ export function PhotoClientDialog({ clientCount, surveyCount, onClose, onSave, o
 
   const onExtract = async () => {
     if (!file) return;
-    const apiKey = loadString(STORAGE_KEYS.apiKey);
-    if (!apiKey) { setError('Add your Gemini API key in Settings first.'); return; }
     setError(null);
     setExtracting(true);
     abortRef.current?.abort();
@@ -81,7 +79,7 @@ export function PhotoClientDialog({ clientCount, surveyCount, onClose, onSave, o
     abortRef.current = ctrl;
     try {
       const model = loadString(STORAGE_KEYS.model) || undefined;
-      const ex = await extractClientFromImage(file, { apiKey, model, signal: ctrl.signal });
+      const ex = await extractClientFromImage(file, { model, signal: ctrl.signal });
       setClient({
         name: ex.name,
         contact: ex.contact,
