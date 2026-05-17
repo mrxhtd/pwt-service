@@ -89,7 +89,7 @@ export function InvoiceButton({ client, products, stocks }: InvoiceButtonProps) 
                 style={{ width: 55, border: '1px solid #e2e8f0', borderRadius: 6, padding: '4px 6px', fontSize: 12, textAlign: 'center' }}
               />
               <span style={{ fontSize: 11, color: '#94a3b8' }}>{prod.unit}</span>
-              <span style={{ fontSize: 11, color: '#94a3b8' }}>@$</span>
+              <span style={{ fontSize: 11, color: '#94a3b8' }}>@EGP</span>
               <input
                 type="number"
                 inputMode="decimal"

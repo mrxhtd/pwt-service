@@ -64,11 +64,11 @@ export const SYSTEM_TYPES: SystemType[] = [
 export const STATUSES: Status[] = ['Active', 'Follow-up', 'Inactive'];
 
 export const SEED_PRODUCTS: Product[] = [
-  { id: 'PRD-001', name: 'Corrosion Inhibitor', unit: 'gal' },
-  { id: 'PRD-002', name: 'Scale Inhibitor',     unit: 'gal' },
-  { id: 'PRD-003', name: 'Biocide',             unit: 'gal' },
-  { id: 'PRD-004', name: 'Oxygen Scavenger',    unit: 'gal' },
-  { id: 'PRD-005', name: 'pH Adjuster',         unit: 'gal' },
+  { id: 'PRD-001', name: 'Corrosion Inhibitor', unit: 'ton' },
+  { id: 'PRD-002', name: 'Scale Inhibitor',     unit: 'ton' },
+  { id: 'PRD-003', name: 'Biocide',             unit: 'ton' },
+  { id: 'PRD-004', name: 'Oxygen Scavenger',    unit: 'ton' },
+  { id: 'PRD-005', name: 'pH Adjuster',         unit: 'ton' },
 ];
 
 export const SEED_CLIENTS: Client[] = [
