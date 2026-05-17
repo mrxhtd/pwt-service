@@ -114,6 +114,11 @@ export default function App() {
     await submitSurvey(s);
   }, [submitSurvey]);
 
+  const updateClient = async (updated: Client) => {
+    setClients((cs) => cs.map((c) => (c.id === updated.id ? updated : c)));
+    try { await upsertClient(updated); } catch { /* optimistic */ }
+  };
+
   const openClient = (c: Client) => {
     setSelectedClientId(c.id);
     setTab('clients');
@@ -231,6 +236,7 @@ export default function App() {
             onNewSurveyManual={onNewManual}
             onSubmitSurvey={onSaveSurvey}
             surveyCount={surveys.length}
+            onUpdateClient={updateClient}
           />
         )}
 

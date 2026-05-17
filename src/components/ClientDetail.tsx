@@ -4,6 +4,7 @@ import type { Client, Product, StockMap, Survey } from '../types';
 import { Badge } from './Badge';
 import { StocksPanel } from './StocksPanel';
 import { SurveysPanel } from './SurveysPanel';
+import { StockForecast } from './StockForecast';
 import { QuickLogSurvey } from './QuickLogSurvey';
 import { WhatsAppButton } from './WhatsAppButton';
 import { InvoiceButton } from './InvoiceButton';
@@ -19,6 +20,7 @@ interface ClientDetailProps {
   onNewSurveyManual: () => void;
   onSubmitSurvey: (s: Survey) => void;
   surveyCount: number;
+  onUpdateClient: (updated: Client) => void;
 }
 
 export function ClientDetail({
@@ -32,6 +34,7 @@ export function ClientDetail({
   onNewSurveyManual,
   onSubmitSurvey,
   surveyCount,
+  onUpdateClient,
 }: ClientDetailProps) {
   const [showQuickLog, setShowQuickLog] = useState(false);
   const clientSurveys = surveys.filter((s) => s.clientId === client.id);
@@ -96,6 +99,12 @@ export function ClientDetail({
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 16 }}>
+        <StockForecast
+          client={client}
+          onSave={(fields) => {
+            onUpdateClient({ ...client, ...fields });
+          }}
+        />
         <StocksPanel
           clientId={client.id}
           products={products}
