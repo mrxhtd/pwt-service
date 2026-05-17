@@ -101,6 +101,8 @@ export function ClientDetail({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 16 }}>
         <StockForecast
           client={client}
+          stocks={stocks}
+          products={products}
           onSave={(fields) => {
             onUpdateClient({ ...client, ...fields });
           }}

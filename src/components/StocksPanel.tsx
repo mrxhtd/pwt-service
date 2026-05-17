@@ -80,7 +80,7 @@ function StockRow({ product, level, onChange }: { product: Product; level: numbe
             }}
             style={{ width: 80, border: `1.5px solid ${ACCENT}`, borderRadius: 7, padding: '5px 8px', fontSize: 13, outline: 'none' }}
           />
-          <span style={{ fontSize: 11, color: '#94a3b8' }}>{product.unit}</span>
+          <span style={{ fontSize: 11, color: '#94a3b8' }}>ton</span>
           <button onClick={commit} style={{ background: ACCENT, color: '#fff', border: 'none', borderRadius: 7, padding: '5px 12px', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Save</button>
           <button onClick={cancel} style={{ background: '#f1f5f9', color: '#64748b', border: 'none', borderRadius: 7, padding: '5px 12px', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Cancel</button>
         </div>
@@ -90,7 +90,7 @@ function StockRow({ product, level, onChange }: { product: Product; level: numbe
           style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'baseline', gap: 4, padding: 0 }}
         >
           <span style={{ fontSize: 18, fontWeight: 800, color: accent }}>{level.toLocaleString()}</span>
-          <span style={{ fontSize: 11, color: '#94a3b8' }}>{product.unit}</span>
+          <span style={{ fontSize: 11, color: '#94a3b8' }}>ton</span>
           <span style={{ fontSize: 11, color: ACCENT, marginLeft: 6, fontWeight: 600 }}>Edit</span>
         </button>
       )}

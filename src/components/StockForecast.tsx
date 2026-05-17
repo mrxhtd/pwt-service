@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
 import { ACCENT } from '../constants';
-import type { Client } from '../types';
+import type { Client, StockMap, Product } from '../types';
 
 interface StockForecastProps {
   client: Client;
-  onSave: (updated: Pick<Client, 'currentStock' | 'avgDailyConsumption' | 'deliveryLeadTime'>) => void;
+  stocks: StockMap;
+  products: Product[];
+  onSave: (updated: Pick<Client, 'avgDailyConsumption' | 'deliveryLeadTime'>) => void;
 }
 
-export function StockForecast({ client, onSave }: StockForecastProps) {
-  const [currentStock, setCurrentStock] = useState(client.currentStock ?? 0);
+export function StockForecast({ client, stocks, products, onSave }: StockForecastProps) {
+  // Current stock is computed from the Product Stock totals
+  const clientStocks = stocks[client.id] ?? {};
+  const currentStock = Object.values(clientStocks).reduce((sum, v) => sum + (v || 0), 0);
+
   const [avgDaily, setAvgDaily] = useState(client.avgDailyConsumption ?? 0);
   const [leadTime, setLeadTime] = useState(client.deliveryLeadTime ?? 3);
   const [dirty, setDirty] = useState(false);
@@ -16,22 +21,27 @@ export function StockForecast({ client, onSave }: StockForecastProps) {
 
   // Reset when client changes
   useEffect(() => {
-    setCurrentStock(client.currentStock ?? 0);
     setAvgDaily(client.avgDailyConsumption ?? 0);
     setLeadTime(client.deliveryLeadTime ?? 3);
     setDirty(false);
     setSaved(false);
-  }, [client.id, client.currentStock, client.avgDailyConsumption, client.deliveryLeadTime]);
+  }, [client.id, client.avgDailyConsumption, client.deliveryLeadTime]);
 
   const daysRemaining = avgDaily > 0 ? Math.round((currentStock / avgDaily) * 10) / 10 : null;
   const needsReorder = daysRemaining !== null && daysRemaining <= leadTime;
 
   const handleSave = () => {
-    onSave({ currentStock, avgDailyConsumption: avgDaily, deliveryLeadTime: leadTime });
+    onSave({ avgDailyConsumption: avgDaily, deliveryLeadTime: leadTime });
     setDirty(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
+
+  // Build per-product breakdown
+  const productBreakdown = products.map((p) => ({
+    name: p.name,
+    level: clientStocks[p.id] ?? 0,
+  })).filter((p) => p.level > 0);
 
   const update = <T,>(setter: (v: T) => void) => (v: T) => {
     setter(v);
@@ -60,12 +70,27 @@ export function StockForecast({ client, onSave }: StockForecastProps) {
       </div>
 
       <div style={{ display: 'grid', gap: 12 }}>
-        <FieldRow
-          label="Current Stock"
-          unit="ton"
-          value={currentStock}
-          onChange={update(setCurrentStock)}
-        />
+        {/* Current stock — computed from Product Stock, not editable */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+          <label style={{ fontSize: 13, fontWeight: 600, color: '#334155', flex: 1 }}>Total On-Site</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 18, fontWeight: 800, color: needsReorder ? '#dc2626' : '#16a34a' }}>
+              {currentStock.toLocaleString()}
+            </span>
+            <span style={{ fontSize: 11, color: '#94a3b8' }}>ton</span>
+          </div>
+        </div>
+        {/* Per-product breakdown */}
+        {productBreakdown.length > 0 && (
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: -4 }}>
+            {productBreakdown.map((p) => (
+              <span key={p.name} style={{ fontSize: 10, color: '#64748b', background: '#f1f5f9', borderRadius: 6, padding: '2px 7px' }}>
+                {p.name}: {p.level}
+              </span>
+            ))}
+          </div>
+        )}
+        <div style={{ height: 1, background: '#e2e8f0' }} />
         <FieldRow
           label="Avg. Daily Use"
           unit="ton/day"
