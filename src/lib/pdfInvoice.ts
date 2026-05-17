@@ -57,7 +57,7 @@ export function generateInvoice(client: Client, items: InvoiceItem[]): void {
     subtotal += total;
     doc.text(item.product.name, 16, y);
     doc.text(String(item.quantity), 100, y);
-    doc.text(item.product.unit, 120, y);
+    doc.text('ton', 120, y);
     doc.text(`EGP ${item.unitPrice.toFixed(2)}`, 140, y);
     doc.text(`EGP ${total.toFixed(2)}`, 168, y);
     y += 8;
