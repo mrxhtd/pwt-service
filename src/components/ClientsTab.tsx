@@ -115,7 +115,7 @@ export function ClientsTab({
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
                 <Stat label="SYSTEM" value={c.systemType} />
-                <Stat label="STOCK" value={`${totalStock.toLocaleString()} gal`} />
+                <Stat label="STOCK" value={`${totalStock.toLocaleString()} ton`} />
                 {lowProducts > 0 && <Stat label="LOW" value={String(lowProducts)} warn />}
                 <Stat label="SURVEYS" value={String(surveyCount)} />
                 <Stat label="NEXT VISIT" value={c.nextVisit || '—'} accent />
